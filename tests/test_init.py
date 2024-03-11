@@ -11,4 +11,4 @@ class Test_Storage(unittest.TestCase):
     def test_init(self):
         bs = BaseModel()
         self.assertEqual(bs.__class__, BaseModel)
-        self.assertisInstance(storage, FileStorage)
+        self.assertIsInstance(storage, FileStorage)
