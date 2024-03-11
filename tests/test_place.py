@@ -22,5 +22,5 @@ class Test_Place(unittest.TestCase):
         self.assertEqual(pl.amenity_ids, [])
 
     def test_parent(self):
-        p = Place()
+        pl = Place()
         self.assertTrue(isinstance(pl, BaseModel))
