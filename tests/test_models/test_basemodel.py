@@ -1,10 +1,10 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
 '''Test for Base Model'''
 
 import uuid
 from datetime import datetime
 import unittest
-from models.base_model import BaseModel
+from base_model import BaseModel
 
 
 class Test_BaseModel(unittest.TestCase):
@@ -45,3 +45,7 @@ class Test_BaseModel(unittest.TestCase):
         bs.save()
         new_time = bs.updated_at
         self.assertNotEqual(update_time, new_time)
+
+
+if __name__ == "__main__":
+    unittest.main()
