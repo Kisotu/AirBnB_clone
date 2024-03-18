@@ -4,23 +4,45 @@
 import unittest
 from models.base_model import BaseModel
 from models.place import Place
+from models.engine.file_storage import FileStorage
+from models import storage
+import os
+from datetime import datetime
 
 
 class Test_Place(unittest.TestCase):
-    def test_str(self):
-        pl = Place()
-        self.assertEqual(pl.city_id, "")
-        self.assertEqual(pl.user_id, "")
-        self.assertEqual(pl.name, "")
-        self.assertEqual(pl.description, "")
-        self.assertEqual(pl.number_rooms, 0)
-        self.assertEqual(pl.number_bathrooms, 0)
-        self.assertEqual(pl.max_guest, 0)
-        self.assertEqual(pl.price_by_night, 0)
-        self.assertEqual(pl.latitude, 0.0)
-        self.assertEqual(pl.longitude, 0.0)
-        self.assertEqual(pl.amenity_ids, [])
+    '''tests for place class'''
 
-    def test_parent(self):
+    def test_teardown(self):
+        '''tear test mthods'''
+
+        self.resetStorage()
+        pass
+
+    def resetStorage(self):
+        '''reset storage data'''
+
+        FileStorage._FileStorage__objects = {}
+        if os.path.isfile(FileStorage._FileStorage__file_path):
+            os.remove(FileStorage._FileStorage__file_path)
+
+    def test_init(self):
+        '''test instantiation of place class'''
+
+        bs = Place()
+        self.assertEqual(str(type(bs)), "<class 'models.place.Place'>")
+        self.assertIsInstance(bs, Place)
+        self.assertTrue(issubclass(type(bs), BaseModel))
+
+    def test_attribs(self):
+        '''tests place class attributes'''
+
+        attributes = storage.attributes()["Place"]
         pl = Place()
-        self.assertTrue(isinstance(pl, BaseModel))
+        for k, v in attributes.items():
+            self.assertTrue(hasattr(pl, k))
+            self.assertEqual(type(getattr(pl, k, None)), v)
+
+
+if __name__ == "__main__":
+    unittest.main()
