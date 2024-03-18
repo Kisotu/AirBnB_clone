@@ -2,6 +2,7 @@
 
 '''Defines the base model'''
 from datetime import datetime
+from models import storage
 import uuid
 
 
@@ -11,38 +12,40 @@ class BaseModel:
     def __init__(self, *args, **kwargs):
         '''init instance'''
 
-        if kwargs is not None and len(kwargs) != 0:
-            if '__class__' in kwargs:
-                del kwargs['__class__']
-            kwargs['created_at'] = datetime.fromisoformat(kwargs['created_at'])
-            kwargs['updated_at'] = datetime.fromisoformat(kwargs['updated_at'])
-            self.__dict__.update(kwargs)
+        if kwargs is not None and kwargs != {}:
+            for key in kwargs:
+                if key == "created_at":
+                    self.__dict__["created_at"] = datetime.strptime(
+                        kwargs["created_at"], "%Y-%m-%dT%H:%M:%S.%f")
+                elif key == "updated_at":
+                    self.__dict__["updated_at"] = datetime.strptime(
+                        kwargs["updated_at"], "%Y-%m-%dT%H:%M:%S.%f")
+                else:
+                    self.__dict__[key] = kwargs[key]
         else:
             self.id = str(uuid.uuid4())
             self.created_at = datetime.now()
             self.updated_at = datetime.now()
-            from .__init__ import storage
             storage.new(self)
 
     def __str__(self):
         '''string rep whem printing instance'''
 
-        return (f"[{type(self).__name__}] ({self.id}) {self.__dict__}")
+        return "[{}] ({}) {}".\
+            format(type(self).__name__, self.id, self.__dict__)
 
     def save(self):
         '''updates instance changes to storage'''
 
-        self.__dict__.update({'updated_at': datetime.now()})
-        from .__init__ import storage
+        self.updated_at = datetime.now()
         storage.save()
 
     def to_dict(self):
         '''Dictionary rep of an instance'''
 
-        diction = dict(self.__dict__)
-        diction.update({'__class__': type(self).__name__,
-                        'updated_at': self.updated_at.isoformat(),
-                        'id': self.id,
-                        'created_at': self.created_at.isoformat()})
+        diction = self.__dict__.copy()
+        diction["__class__"] = type(self).__name__
+        diction["created_at"] = diction["created_at"].isoformat()
+        diction["updated_at"] = diction["updated_at"].isoformat()
 
         return diction
